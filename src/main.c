@@ -77,14 +77,16 @@ int main(void)
 
 void vtask_led_handler(void *params){
 
+	uint32_t current_notification_value = 0;
+
 	while(1){
 
 		//wait until notification from button
-		if(xTaskNotifyWait(0, 0, NULL, portMAX_DELAY) == pdTRUE){
+		if(xTaskNotifyWait(0, 0, &current_notification_value, portMAX_DELAY) == pdTRUE){
 
 			//toggle the LED
 			GPIO_ToggleBits(GPIOA, GPIO_Pin_5);
-			sprintf(usr_msg, "notification received\r\n");
+			sprintf(usr_msg, "notification received: Button count is  %ld \r\n", current_notification_value);
 			printmsg(usr_msg);
 		}
 	}
@@ -99,7 +101,7 @@ void vtask_button_handler(void *params){
 			rtos_delay(100);
 
 			//send notification to led task
-			xTaskNotify(xTaskHandle1, 0x0, eNoAction);
+			xTaskNotify(xTaskHandle1, 0x0, eIncrement);
 
 		}
 	}
